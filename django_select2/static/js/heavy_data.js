@@ -68,14 +68,9 @@ var django_select2 = {
 		}
 	},
 	onValChange: function () {
-<<<<<<< HEAD
-
-		var e = $(this), res = e.data('results'), val = e.val(), txt, id = e.attr('id');
-=======
 		var e = $(this), res, id = e.attr('id');
 
 		res = django_select2.getValText(e, false);
->>>>>>> upstream/v1.1
 		
 		if (res && res[1]) {
 			// Cookies are used to persist selection's text. This is needed
