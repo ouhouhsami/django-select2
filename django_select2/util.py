@@ -2,6 +2,7 @@ import re
 import threading
 import datetime
 
+
 def synchronized(f):
     f.__lock__ = threading.Lock()
 
@@ -17,12 +18,14 @@ __field_store = {}
 
 ID_PATTERN = r"[0-9_a-zA-Z.:+\- ]+"
 
+
 def is_valid_id(val):
     regex = "^%s$" % ID_PATTERN
     if re.match(regex, val) is None:
         return False
     else:
         return True
+
 
 @synchronized
 def register_field(name, field):
@@ -38,6 +41,6 @@ def register_field(name, field):
         id_ = __field_store[name]
     return id_
 
+
 def get_field(id_):
     return __id_store.get(id_, None)
-

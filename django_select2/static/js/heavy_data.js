@@ -52,6 +52,7 @@ var django_select2 = {
 		document.cookie = c_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 	},
 	onValChange: function () {
+
 		var e = $(this), res = e.data('results'), val = e.val(), txt, id = e.attr('id');
 		
 		if (res) {
@@ -73,18 +74,18 @@ var django_select2 = {
 		django_select2.delCookie(id + '_heavy_val');
 		django_select2.delCookie(id + '_heavy_txt');
 	},
-	onInit: function (e) {
+	onInit: function (e, callback) {
 		e = $(e);
 		var id = e.attr('id'),
 			val = django_select2.getCookie(id + '_heavy_val'),
 			txt = django_select2.getCookie(id + '_heavy_txt');
-
+			
 		if (txt && e.val() == val) {
 			// Restores persisted value text.
-			return {'id': val, 'text': txt};
+			callback({'id': val, 'text': txt});
 		} else {
-			e.val(null);
+			//e.val(null);
 		}
-		return null;
+        return null;
 	}
 };
