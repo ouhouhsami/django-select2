@@ -146,7 +146,7 @@ class HeavySelect2Mixin(Select2Mixin):
         self.choices = kwargs.pop('choices', [])
         if not self.view and not self.url:
             raise ValueError('data_view or data_url is required')
-        self.url = None
+        #self.url = None
         self.options['ajax'] = {
             'dataType': 'json',
             'quietMillis': 100,
