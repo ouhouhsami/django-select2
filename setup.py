@@ -108,12 +108,12 @@ DESCRIPTION = "Select2 option fields for Django"
 AUTHOR = "Nirupam Biswas"
 AUTHOR_EMAIL = "admin@applegrew.com"
 URL = "https://github.com/applegrew/django-select2"
-VERSION = __import__(PACKAGE).__version__
+#VERSION = __import__(PACKAGE).__version__
 
 
 setup(
     name=NAME,
-    version=VERSION,
+    version='2.0.1',
     description=DESCRIPTION,
     long_description=read("README.md"),
     author=AUTHOR,
