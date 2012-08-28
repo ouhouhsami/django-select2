@@ -207,7 +207,7 @@ class HeavySelect2MultipleWidget(HeavySelect2Mixin, MultipleSelect2HiddenInput):
 
 ### Auto Heavy widgets ###
 
-class AutoHeavySelect2Mixin(HeavySelect2Mixin):
+class AutoHeavySelect2Mixin(object):
     def render_inner_js_code(self, id_, *args):
         js = u"$('#%s').data('field_id', '%s');" % (id_, self.field_id)
         js += super(AutoHeavySelect2Mixin, self).render_inner_js_code(id_, *args)
