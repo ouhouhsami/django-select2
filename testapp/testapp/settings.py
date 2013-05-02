@@ -7,7 +7,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 import os, sys
 
-# Including the great parent so that djang_select2 can be found.
+# Including the great parent so that django_select2 can be found.
 parent_folder = PROJECT_ROOT
 parent_folder = parent_folder.split('/')[:-2]
 parent_folder = '/'.join(parent_folder)
@@ -130,8 +130,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    "django_select2",
-    "testmain",
+    'django_select2',
+    'testapp.testmain',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -162,7 +162,7 @@ LOGGING = {
         'django_select2': {
             'handlers':['console'],
             'propagate': True,
-            'level':'INFO',
+            'level':'DEBUG',
         },
         'django.request': {
             'handlers': ['mail_admins'],
@@ -171,3 +171,21 @@ LOGGING = {
         },
     }
 }
+
+AUTO_RENDER_SELECT2_STATICS = False
+
+#GENERATE_RANDOM_SELECT2_ID = True
+
+##
+# To test for multiple processes in developement system w/o WSGI, runserver at
+# different ports. Use $('#select2_field_html_id').data('field_id') to get the id
+# in one process. Now switch to another port and use
+# $('#select2_field_html_id').data('field_id', "id from previous process") to set
+# id from last process. Now try to use that field. Its ajax should still work and
+# you should see a message like - "Id 7:2013-03-01 14:49:18.490212 not found in
+# this process. Looking up in remote server.", in console if you have debug enabled.
+##
+#ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
+#SELECT2_MEMCACHE_HOST = '127.0.0.1' # Uncomment to use memcached too
+#SELECT2_MEMCACHE_PORT = 11211       # Uncomment to use memcached too
+#SELECT2_MEMCACHE_TTL = 9           # Default 900

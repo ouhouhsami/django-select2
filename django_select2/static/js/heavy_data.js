@@ -1,8 +1,9 @@
 if (!window['django_select2']) {
-	// This JS file can be included multiple times. So, as not to ovverwrite previous states, we run this only once.
+	// This JS file can be included multiple times. So, as not to overwrite previous states, we run this only once.
 
 	var django_select2 = {
-		MULTISEPARATOR: String.fromCharCode(0), // We use this unprintable char as separator, since this can't be entered by user.
+		MULTISEPARATOR: String.fromCharCode(0), // We use this unprintable char as separator,
+												// since this can't be entered by user.
 		get_url_params: function (term, page, context) {
 			var field_id = $(this).data('field_id'),
 				res = {
@@ -37,54 +38,8 @@ if (!window['django_select2']) {
 			}
 			return results;
 		},
-		setCookie: function (c_name, value) {
-			document.cookie = c_name + "=" + escape(value);
-		},
-		getCookie: function (c_name) {
-			var i, x, y, ARRcookies = document.cookie.split(";");
-
-			for (i = 0; i < ARRcookies.length; i++) {
-				x = ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
-				y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
-				x = x.replace(/^\s+|\s+$/g,"");
-				if (x == c_name) {
-					return unescape(y);
-				}
-			}
-		},
-		delCookie: function (c_name, isStartsWithPattern) {
-			var i, x, ARRcookies;
-
-			if (!isStartsWithPattern) {
-				document.cookie = c_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-			} else {
-				ARRcookies = document.cookie.split(";");
-
-				for (i = 0; i < ARRcookies.length; i++) {
-					x = ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
-					x = x.replace(/^\s+|\s+$/g,"");
-					if (x.indexOf(c_name) == 0) {
-						document.cookie = c_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-					}
-				}
-			}
-		},
 		onValChange: function () {
-			var e = $(this), res, id = e.attr('id');
-
-			res = django_select2.getValText(e, false);
-			
-			if (res && res[1]) {
-				// Cookies are used to persist selection's text. This is needed
-				// when the form springs back if there is any validation failure.
-				$(res[0]).each(function (idx) {
-					django_select2.setCookie(id + '_heavy_val:' + idx, this);
-					django_select2.setCookie(id + '_heavy_txt:' + idx, res[1][idx]);
-				});
-			} else {
-				django_select2.delCookie(id + '_heavy_val:', true);
-				django_select2.delCookie(id + '_heavy_txt:', true);
-			}
+			django_select2.updateText($(this));
 		},
 		prepareValText: function (vals, txts, isMultiple) {
 			var data = []
@@ -101,7 +56,37 @@ if (!window['django_select2']) {
 				}
 			}
 		},
-		getValText: function ($e, isGetFromCookieAllowed) {
+		updateText: function ($e) {
+			var val = $e.select2('val'), data = $e.select2('data'), txt = $e.txt(), isMultiple = !!$e.attr('multiple'),
+				diff;
+			
+			if (val || val === 0) { // Means value is set. A numerical 0 is also a valid value.
+				if (isMultiple) {
+					if (val.length !== txt.length) {
+						txt = [];
+						$(val).each(function (idx) {
+							var i, value = this, id;
+							
+							for (i in data) {
+								id = data [i].id;
+								if (id instanceof String) {
+									id = id.valueOf();
+								}
+								if (id == value) {
+									txt.push(data[i].text);
+								}
+							}
+						});
+					}
+				} else {
+					txt = data.text;
+				}
+				$e.txt(txt);
+			} else {
+				$e.txt('');
+			}
+		},
+		getValText: function ($e) {
 			var val = $e.select2('val'), res = $e.data('results'), txt = $e.txt(), isMultiple = !!$e.attr('multiple'),
 				f, id = $e.attr('id');
 			if (val || val === 0) { // Means value is set. A numerical 0 is also a valid value.
@@ -113,7 +98,7 @@ if (!window['django_select2']) {
 					}
 				}
 
-				if (txt || txt === 0) {
+				if (txt === 0 || (txt && val.length === txt.length)) {
 					return [val, txt];
 				}
 
@@ -141,23 +126,6 @@ if (!window['django_select2']) {
 						return [val, txt];
 					}
 				}
-
-				if (isGetFromCookieAllowed) {
-					txt = [];
-					$(val).each(function (idx) {
-						var value = this, cookieVal;
-
-						cookieVal = django_select2.getCookie(id + '_heavy_val:' + idx);
-						
-						if (cookieVal == value) {
-							txt.push(django_select2.getCookie(id + '_heavy_txt:' + idx));
-						}
-					});
-					if (txt || txt === 0) {
-						return [val, txt];
-					}
-				}
-
 			}
 			return null;
 		},
@@ -180,6 +148,7 @@ if (!window['django_select2']) {
 				e.val(null); // Nulling out set value so as not to confuse users.
 			}
 			callback(data); // Change for 2.3.x
+			django_select2.updateText(e);
 		},
 		onMultipleHiddenChange: function () {
 			var $e = $(this), valContainer = $e.data('valContainer'), name = $e.data('name'), vals = $e.val();
@@ -215,6 +184,12 @@ if (!window['django_select2']) {
 				var args = Array.prototype.slice.call(arguments);
 		        return f.apply($('#' + id).get(0), args);
 		    }
+		},
+		logErr: function () {
+			if (console && console.error) {
+	            args = Array.prototype.slice.call(arguments);
+	            console.error.apply(console, args);
+	        }
 		}
 	};
 
@@ -232,12 +207,18 @@ if (!window['django_select2']) {
 						}
 					}
 					this.attr('txt', val);
+				} else {
+					this.removeAttr('txt');
 				}
 				return this;
 			} else {
 				val = this.attr('txt');
-				if (val && this.attr('multiple')) {
-					val = val.split(django_select2.MULTISEPARATOR);
+				if (this.attr('multiple')) {
+					if (val) {
+						val = val.split(django_select2.MULTISEPARATOR);
+					} else {
+						val = [];
+					}
 				}
 				return val;
 			}
